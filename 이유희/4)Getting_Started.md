@@ -37,3 +37,21 @@
 2. SDKMAN
 3. Homebrew
 4. MacPorts
+
+### The “main” Method
+- 스프링 어플리케이션의 엔트리 포인트.
+```java
+
+    public static void main(String[] args) {
+        SpringApplication.run(SpringDocsPracticeApplication.class, args);
+    }
+```
+- run 메서드가 호출되면, SpringApplication 이 어플리케이션을 실행시키고, 자동 셋팅된 톰캣 서버가 시작된다.
+
+
+### Creating an Executable Jar
+```shell
+mvn package
+jar tvf target/myproject-0.0.1-SNAPSHOT.jar
+java -jar target/myproject-0.0.1-SNAPSHOT.jar
+```
