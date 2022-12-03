@@ -1,0 +1,295 @@
+# 스프링 문서 챕터4 Getting Started
+
+# 시스템 요구 사항
+
+스프링 부트는 아래의 버전을 지원합니다
+
+- Spring Framework 5.3.22+
+- 자바 8 ~ 18
+- 메이븐 3.5+
+- 그래들 6.8.x, 6.9.x 및 7.x
+
+# 서블릿 컨테이너
+
+Spring Boot는 다음과 같은 임베디드 서블릿 컨테이너를 지원합니다.
+
+| 이름 | 버전 |
+| --- | --- |
+| 톰캣 9.0 | 4.0 |
+| 제티 9.4 | 3.1 |
+| 제티 10.0 | 4.0 |
+| 언더토우 2.0 | 4.0 |
+
+# 스프링 부트 CLI 설치
+
+### 1. 수동 설치
+
+Spring 소프트웨어 리포지토리에서 Spring CLI 배포를 다운로드할 수 있습니다.
+
+- [spring-boot-cli-2.6.11-SNAPSHOT-bin.zip](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/2.6.11-SNAPSHOT/spring-boot-cli-2.6.11-SNAPSHOT-bin.zip)
+- [spring-boot-cli-2.6.11-SNAPSHOT-bin.tar.gz](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/2.6.11-SNAPSHOT/spring-boot-cli-2.6.11-SNAPSHOT-bin.tar.gz)
+
+### 2. SDKMAN으로 설치
+
+SDKMAN을 다운 후 [sdkman.io](https://sdkman.io/) 에서 다음 명령을 사용하여 Spring Boot를 설치합니다.
+
+```bash
+$ sdk install springboot
+$ spring --version
+Spring CLI v2.6.11-SNAPSHOT
+```
+
+### 3. OSX HomeBrew로 설치
+
+Mac을 사용 중이고 [Homebrew](https://brew.sh/) 를 사용하는 경우 다음 명령을 사용하여 Spring Boot CLI를 설치할 수 있습니다.
+
+```bash
+$ brew tap spring-io/tap
+$ brew install spring-boot
+```
+
+### 4. MacPorts로 설치
+
+Mac을 사용 중이고 [MacPorts](https://www.macports.org/) 를 사용하는 경우 다음 명령을 사용하여 Spring Boot CLI를 설치할 수 있습니다.
+
+```bash
+$ sudo port install spring-boot-cli
+```
+
+### 5. Windows Scoop로 설치
+
+Windows를 사용 중이고 [Scoop](https://scoop.sh/) 을 사용하는 경우 다음 명령을 사용하여 Spring Boot CLI를 설치할 수 있습니다.
+
+```bash
+> scoop bucket add extras
+> scoop install springboot
+```
+
+# 예제 작성
+
+Spring의 주요 기능 중 일부를 강조하는 간단한 "Hello World!"웹 애플리케이션을 Java로 개발해 보겠습니다. 대부분의 IDE가 지원하기 때문에 Maven을 사용하여 이 프로젝트를 빌드 할 것입니다.
+
+Spring Boot로 프로그램을 작성하기 전 먼저 유효한 Java와 Maven이 설치되어 있는지 확인합니다.
+
+```bash
+$ java -version
+java version "1.8.0_102"
+Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
+
+$ mvn -v
+Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
+Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+Java version: 1.8.0_102, vendor: Oracle Corporation
+```
+
+### 1. POM 작성
+
+Maven `pom.xml`파일을 만들어야 합니다. `pom.xml`는 프로젝트를 빌드하는 데 사용되는 레시피입니다. 좋아하는 텍스트 편집기를 열고 다음을 추가하십시오 :
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>myproject</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.11-SNAPSHOT</version>
+    </parent>
+
+    <!-- Additional lines to be added here... -->
+
+    <!-- (you do not need this if you are using a .RELEASE version) -->
+    <repositories>
+        <repository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+            <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+        <repository>
+            <id>spring-milestones</id>
+            <url>https://repo.spring.io/milestone</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>spring-snapshots</id>
+            <url>https://repo.spring.io/snapshot</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>spring-milestones</id>
+            <url>https://repo.spring.io/milestone</url>
+        </pluginRepository>
+    </pluginRepositories>
+</project>
+```
+
+POM.xml은 당신에게 작업 빌드를 제공합니다. `mvn package`을 실행하면 테스트 할 수 있습니다 ( 현 상태에서 "jar will be empty - no content was marked for inclusion!" 경고 메시지 무시 가능)
+
+# 2. Classpath 의존성 추가
+
+Spring Boot는 클래스 패스에 jar을 쉽게 추가 할 수있게 해주는 많은 "Starter POM"을 제공합니다. 예제 애플리케이션은 이미 POM의 `parent` 섹션에서 `spring-boot-starter-parent` 를 사용하고 있습니다. `spring-boot-starter-parent`는 유용한 Maven 기본값을 제공하는 특별한 시작 프로그램입니다. 또한 추가된 의존성(외부 라이브러리)에 대한 `version`태그를 생략 할 수 있도록 `dependency-management`섹션을 제공합니다.
+
+특정 유형의 응용 프로그램을 개발하기 위해서는 `Spring-boot-starter-parent` 외에도 다른 "Starter POMs"가 필요합니다. 예제는 **웹 애플리케이션을 개발 중이므로 `spring-boot-starter-web` dependency를 추가 할 것입니다**. 그 전에는 현재 가지고 있는 의존성들을 확인해 보겠습니다.
+
+```bash
+$ mvn dependency:tree
+
+[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+```
+
+`mvn dependency:tree`명령은 프로젝트 종속성에 대해 트리 형태로 출력합니다. 결과를 확인해 보면 현재 예제가 의존하고 있는 `spring-boot-starter-parent` 만으로는 `spring-boot-starter-web` dependency를 제공하지 않는 것을 볼 수 있습니다 .
+
+이제  `pom.xml`을 편집해 `parent`섹션 바로 아래에 `spring-boot-starter-web`의존성을 추가 하겠습니다.
+
+```bash
+<dependencies> 
+    <dependency> 
+        <groupId> org.springframework.boot </ groupId> 
+        <artifactId> spring-boot-starter-web </ artifactId> 
+    </ dependency> 
+</ dependencies>
+```
+
+다시 `mvn dependency:tree` 명령어를 실행하면 Tomcat 웹 서버 및 Spring Boot 자체를 포함하여 많은 추가 종속성이 생겼음을 알 수 있습니다.
+
+# 3. 코드 작성
+
+우리의 애플리케이션을 마치기 위해 하나의 자바 파일을 만들어야합니다. **Maven은 기본적으로 `src/main/java` 경로에 소스를 컴파일** 하여 폴더 구조를 생성 합니다.
+
+이제 **`src/main/java` 경로에 [MyApplication.java](http://MyApplication.java) 파일을 생성**하겠습니다. → `src/main/java/MyApplication.java`
+
+```java
+@RestController
+@EnableAutoConfiguration
+public class MyApplication {
+
+    @RequestMapping("/")
+    String home() {
+        return "Hello World!";
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+
+}
+```
+
+여기에 코드가 많지는 않지만 꽤 많은 일이 일어나고 있습니다. 중요한 부분을 살펴 보겠습니다.
+
+### @RestController와 @RequestMapping 어노테이션
+
+**MyApplication** Class의 첫 번째 어노테이션은 **@RestController**입니다. 이를 **스테레오 타입 어노테이션**이라고합니다. 코드를 읽는 사람들에게 힌트를 제공하고, Spring에는 이 클래스가 특정 역할을한다는 힌트를 제공합니다.
+
+예제의 경우, **클래스가 웹 `@Controller` 로 취급 되어 들어오는 웹 요청을 처리 할 때 스프링이 이를 고려합니다.**
+
+**@RequestMapping** 어노테이션은 "라우팅"정보를 제공합니다. **Spring에게 "/"경로를 가진 HTTP 요청이 `home`메소드에 매핑되어야 한다고 말하고 있습니다.**
+
+@RestController 어노테이션은 결과 문자열을 호출자에게 직접 반환하도록 Spring에 지시합니다.
+
+<aside>
+💡 `@RestController`와 `@RequestMapping`어노테이션은 Spring MVC annotation입니다. (스프링 부트에만 국한된 것이 아니다).
+</aside>
+
+### @EnableAutoConfiguration 어노테이션
+
+예제에 적용된 클래스 수준 어노테이션 중 두 번째 위치한 **@EnableAutoConfiguration 어노테이션은 Spring Boot가 여러분이 추가 한 종속성을 기반으로 Spring을 구성하는 방법을 "추측"하도록 지시합니다.**
+`spring-boot-starter-web` Tomcat과 Spring MVC가 추가했으므로 자동 구성은 웹 애플리케이션을 개발하고 이에 따라 Spring을 설정한다고 가정합니다.
+
+<aside>
+💡 말이 어렵지만 개발자가 추가한 종속성들을 기반으로 필요한 설정들을 자동으로 구성해준다는 말인 것 같습니다. 기본적으로 @SpringBootApplication 어노테이션이 안에 포함되어 있습니다.
+
+</aside>
+
+### main메소드
+
+우리의 응용 프로그램의 마지막 부분은 `main`메소드입니다.
+
+이것은 응용 프로그램 엔트리포인트에 대한 Java의 표준 규칙입니다. **main 메소드는 SpringApplication 클래스의 `run` 메소드를 호출**하여 SpringApplication을 실행합니다. SpringApplication이 시작되면 자동으로 구성된 Tomcat 웹 서버가 시작됩니다.
+
+기본 Spring 구성 요소 인 **`SpringApplication`에 알리기 위해 MyApplication.class를 `run` 메소드의 인수로 전달해야합니다. `args` 배열도 전달되어 명령을 수행합니다.**
+
+# 4. 예제 실행
+
+이 시점에서 우리의 응용 프로그램은 작동할 수 있습니다. 예제는 `spring-boot-starter-parent`POM을 사용하고 있기 때문에 **`mvn spring-boot:run`**을 사용하여 응용 프로그램을 시작할 수 있습니다.
+
+**`mvn spring-boot:run`을 루트 프로젝트 디렉토리에서 실행하여 응용 프로그램을 시작합니다**.
+
+```bash
+$ mvn spring-boot:run
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v2.6.11-SNAPSHOT)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started MyApplication in 2.222 seconds (JVM running for 6.514)
+```
+
+이제 웹 브라우저를 열고 `localhost:8080/`에 접속하면 “Hello World”가 출력됩니다.
+
+# 실행 가능한 Jar 만들기
+
+프로덕션 환경에서 실행할 수있는 완전히 독립적 인 실행 가능한 jar 파일을 작성하여 예제를 마무리 해 보겠습니다. 실행 가능한 jar ( "fat jar"라고도 함)는 컴파일 된 클래스와 함께 코드가 실행해야하는 모든 jar 종속성을 포함하는 아카이브입니다.
+
+**실행 jars를 만들려면 우리는 `pom.xml`에 `spring-boot-maven-plugin`를 추가해야합니다**. `dependencies`섹션 바로 아래에 다음 행을 추가 하겠습니다.
+
+```bash
+<build>
+    <plugins>
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+        </plugin>
+    </plugins>
+</build>
+```
+
+POM.xml에 플러그인을 추가했으면 이제 우리는 실행 가능한 jar를 생성할 수 있습니다.
+
+```bash
+$ mvn package
+
+[INFO] Scanning for projects...
+[INFO]
+[INFO] ------------------------------------------------------------------------
+[INFO] Building myproject 0.0.1-SNAPSHOT
+[INFO] ------------------------------------------------------------------------
+[INFO] .... ..
+[INFO] --- maven-jar-plugin:2.4:jar (default-jar) @ myproject ---
+[INFO] Building jar: /Users/developer/example/spring-boot-example/target/myproject-0.0.1-SNAPSHOT.jar
+[INFO]
+[INFO] --- spring-boot-maven-plugin:1.2.2.RELEASE:repackage (default) @ myproject ---
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+```
+
+**jar 실행**
+```bash
+$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::  (v1.2.2.RELEASE)
+....... . . .
+....... . . . (log output here)
+....... . . .
+........ Started Example in 2.536 seconds (JVM running for 2.864)
+```
