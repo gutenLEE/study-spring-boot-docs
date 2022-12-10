@@ -39,3 +39,28 @@
 - Xml 설정 임포트  
   ```@ImportResource``` 사용
 - Auto-configuration
+  jar 디펜던시를 기준으로 개발자가 설정 관련 빈 클래스를 정의하지 않아도 부트가 알아서 구성한다.
+  ```@EnableAutoConfiguration``` 이나 ```@SpringBootApplication``` 어노테이션을 선언해주면 된다.
+
+### Spring Beans and Dependency Injection
+- ```@SpringBootApplication```이 선언된 클래스가 루트 패키지에 위치해 있다면, 이 경로를 기준으로 빈 클래스(@Component, @Service, @Repository, @Controller 등)을 탐색해 의존성 주입을 해준다.
+  생성자를 통한 주입을 사용했을 경우, 생성자가 2개 이상이면 ```@Autowired```를 선언 해줘야 한다. 
+
+### Using the @SpringBootApplication Annotation
+
+![](images/interface-springbootapplication.png)
+- @EnableAutoConfiguration : 스프링 부트 auto-configuration 매커니즘을 활성화 한다.
+- @ComponentScan : @Component 스캔을 활성화 한다. 
+- @SpringBootConfiguration : 추가적인 빈, 설정 클래스들을 등록과 임포트를 해준다.
+
+```java
+// Same as @SpringBootConfiguration @EnableAutoConfiguration @ComponentScan
+@SpringBootApplication
+public class MyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+
+}
+```
